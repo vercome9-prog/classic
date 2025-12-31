@@ -8,7 +8,7 @@ const TabsManager = {
         
         if (tab === 'devices') {
             DevicesManager.load();
-        } else {
+        } else if (tab === 'logs') {
             LogsManager.load();
         }
     }

