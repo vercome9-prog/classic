@@ -1,0 +1,104 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 11px;
+}
+
+thead {
+    background: #888;
+    color: white;
+}
+
+th {
+    padding: 6px 8px;
+    text-align: left;
+    font-weight: 500;
+    border: 1px solid #666;
+    font-size: 11px;
+}
+
+td {
+    padding: 5px 8px;
+    border: 1px solid #ddd;
+    font-size: 11px;
+}
+
+tbody tr:hover {
+    background: #f0f0f0;
+}
+
+tbody tr.selected {
+    background: #e8f0e8;
+}
+
+.checkbox-cell {
+    text-align: center;
+    width: 40px;
+}
+
+.checkbox-cell input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+.android-id {
+    font-family: monospace;
+    font-size: 10px;
+    color: #556b2f;
+}
+
+.phone-numbers {
+    font-size: 10px;
+    color: #666;
+}
+
+.online {
+    color: #556b2f;
+    font-weight: 500;
+}
+
+.offline {
+    color: #888;
+    font-weight: 500;
+}
+
+.command-cell {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: monospace;
+    font-size: 10px;
+}
+
+.log-cell {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: monospace;
+    font-size: 10px;
+}
+
+.log-type {
+    display: inline-block;
+    padding: 2px 5px;
+    border-radius: 2px;
+    font-size: 10px;
+    background: #888;
+    color: white;
+}
+
+.log-type.sms_received {
+    background: #556b2f;
+}
+
+.log-type.getAppsAll_result {
+    background: #556b2f;
+}
+
+.log-type.getSmsInbox_result {
+    background: #556b2f;
+}

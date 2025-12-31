@@ -1,0 +1,112 @@
+.search-box input,
+.filter-box select {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #888;
+    background: white;
+    font-size: 12px;
+}
+
+.search-box input:focus,
+.filter-box select:focus {
+    outline: 1px solid #556b2f;
+}
+
+.actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 5px 10px;
+    border: 1px solid #888;
+    background: #556b2f;
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: #6b7f3f;
+}
+
+.btn-primary:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: #888;
+}
+
+.btn-secondary:hover {
+    background: #999;
+}
+
+.pagination button {
+    padding: 4px 8px;
+    border: 1px solid #888;
+    background: white;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.pagination button:hover:not(:disabled) {
+    background: #556b2f;
+    color: white;
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination button.active {
+    background: #556b2f;
+    color: white;
+}
+
+.pagination .page-info {
+    padding: 4px 8px;
+    color: #666;
+    font-size: 11px;
+}
+
+.modal input[type="text"],
+.modal input[type="number"],
+.modal textarea,
+.modal select {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #888;
+    background: white;
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+.modal input[type="text"]:focus,
+.modal input[type="number"]:focus,
+.modal textarea:focus,
+.modal select:focus {
+    outline: 1px solid #556b2f;
+}
+
+.modal textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.modal label {
+    display: block;
+    margin-bottom: 3px;
+    font-weight: 500;
+    color: #333;
+    font-size: 12px;
+    margin-top: 8px;
+}
+
+.modal label:first-of-type {
+    margin-top: 0;
+}
