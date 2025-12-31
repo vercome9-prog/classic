@@ -1,4 +1,7 @@
 <?php
+// Increase execution time for Gradle build
+set_time_limit(600); 
+
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -6,6 +9,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Method not allowed']);
     exit;
 }
+
+// Flush output early to let PHP continue working in the background if needed
+// (Though we want the final JSON, we can't really stream it easily with exec)
 
 $input = json_decode(file_get_contents('php://input'), true);
 $apkName = $input['apkName'] ?? 'ClassicBotMazar';
@@ -39,10 +45,11 @@ $isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
 $output = [];
 $returnVar = 0;
 
+$rootPath = realpath(__DIR__ . '/../../../');
+
 if ($isWindows) {
-    // Windows build
-    $rootPath = realpath(__DIR__ . '/../../../');
-    // Use call to ensure the script doesn't exit the shell early
+    // Windows build - use start /b to keep it background but capture output
+    // Actually, exec normally waits. The issue might be cmd buffering.
     $command = 'cd /d ' . escapeshellarg($rootPath) . ' && call gradlew.bat assembleDebug 2>&1';
 } else {
     // Linux/Replit build
@@ -53,17 +60,21 @@ if ($isWindows) {
         $javaHome = dirname(dirname($realJavaPath));
         $javaHomeCmd = "export JAVA_HOME=$javaHome; ";
     }
-    $command = $javaHomeCmd . 'cd ' . escapeshellarg(__DIR__ . '/../../../') . ' && chmod +x gradlew && ./gradlew assembleDebug 2>&1';
+    $command = $javaHomeCmd . 'cd ' . escapeshellarg($rootPath) . ' && chmod +x gradlew && ./gradlew assembleDebug 2>&1';
 }
 
+// Execute the command
 exec($command, $output, $returnVar);
+
+// Log to a temporary file for debugging
+file_put_contents(__DIR__ . '/build_last_log.txt', implode("\n", $output));
 
 if ($returnVar === 0) {
     $apkPath = 'app/build/outputs/apk/debug/app-debug.apk';
     $newApkName = preg_replace('/[^a-zA-Z0-9_\-]/', '', $apkName);
     if (empty($newApkName)) $newApkName = 'app';
     
-    $fullApkSource = realpath(__DIR__ . '/../../../') . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $apkPath);
+    $fullApkSource = $rootPath . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $apkPath);
     $fullApkDest = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . $newApkName . '.apk';
     
     if (file_exists($fullApkSource)) {
@@ -78,7 +89,7 @@ if ($returnVar === 0) {
             echo json_encode(['success' => false, 'message' => 'Failed to copy APK to panel directory', 'log' => implode("\n", $output)]);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'APK file not found after build at: ' . $fullApkSource, 'log' => implode("\n", $output)]);
+        echo json_encode(['success' => false, 'message' => 'APK file not found after build. Check build log.', 'log' => implode("\n", $output)]);
     }
 } else {
     echo json_encode(['success' => false, 'message' => 'Build failed with exit code ' . $returnVar, 'log' => implode("\n", $output)]);
