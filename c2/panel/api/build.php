@@ -33,32 +33,39 @@ if (file_exists($stringsPath)) {
     file_put_contents($stringsPath, $content);
 }
 
-// Run Gradle build
+// Determine if we are on Windows or Linux
+$isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+
 $output = [];
 $returnVar = 0;
-// We use ./gradlew assembleDebug to build the APK
-$command = 'export JAVA_HOME=/usr/lib/openjdk; cd ' . escapeshellarg(__DIR__ . '/../../../') . ' && ./gradlew assembleDebug 2>&1';
-// Try to find the actual JAVA_HOME if the above is wrong
-if (!file_exists('/usr/lib/openjdk')) {
+
+if ($isWindows) {
+    // Windows build
+    $command = 'cd /d ' . escapeshellarg(realpath(__DIR__ . '/../../../')) . ' && gradlew.bat assembleDebug 2>&1';
+} else {
+    // Linux/Replit build
     $javaPath = shell_exec('which java');
+    $javaHomeCmd = '';
     if ($javaPath) {
-        $realJavaPath = realpath($javaPath);
-        // Usually /usr/lib/jvm/java-.../bin/java
+        $realJavaPath = realpath(trim($javaPath));
         $javaHome = dirname(dirname($realJavaPath));
-        $command = "export JAVA_HOME=$javaHome; cd " . escapeshellarg(__DIR__ . '/../../../') . " && ./gradlew assembleDebug 2>&1";
+        $javaHomeCmd = "export JAVA_HOME=$javaHome; ";
     }
+    $command = $javaHomeCmd . 'cd ' . escapeshellarg(__DIR__ . '/../../../') . ' && chmod +x gradlew && ./gradlew assembleDebug 2>&1';
 }
+
 exec($command, $output, $returnVar);
 
 if ($returnVar === 0) {
     $apkPath = 'app/build/outputs/apk/debug/app-debug.apk';
     $newApkName = preg_replace('/[^a-zA-Z0-9_\-]/', '', $apkName);
     if (empty($newApkName)) $newApkName = 'app';
-    $newApkPath = 'c2/panel/' . $newApkName . '.apk';
     
-    $fullApkPath = __DIR__ . '/../../../' . $apkPath;
-    if (file_exists($fullApkPath)) {
-        if (copy($fullApkPath, __DIR__ . '/../' . $newApkName . '.apk')) {
+    $fullApkSource = realpath(__DIR__ . '/../../../') . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $apkPath);
+    $fullApkDest = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . $newApkName . '.apk';
+    
+    if (file_exists($fullApkSource)) {
+        if (copy($fullApkSource, $fullApkDest)) {
             echo json_encode([
                 'success' => true, 
                 'message' => 'Build successful', 
@@ -69,7 +76,7 @@ if ($returnVar === 0) {
             echo json_encode(['success' => false, 'message' => 'Failed to copy APK to panel directory', 'log' => implode("\n", $output)]);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'APK file not found after build at ' . $apkPath, 'log' => implode("\n", $output)]);
+        echo json_encode(['success' => false, 'message' => 'APK file not found after build', 'log' => implode("\n", $output)]);
     }
 } else {
     echo json_encode(['success' => false, 'message' => 'Build failed with exit code ' . $returnVar, 'log' => implode("\n", $output)]);
