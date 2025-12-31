@@ -41,7 +41,9 @@ $returnVar = 0;
 
 if ($isWindows) {
     // Windows build
-    $command = 'cd /d ' . escapeshellarg(realpath(__DIR__ . '/../../../')) . ' && gradlew.bat assembleDebug 2>&1';
+    $rootPath = realpath(__DIR__ . '/../../../');
+    // Use call to ensure the script doesn't exit the shell early
+    $command = 'cd /d ' . escapeshellarg($rootPath) . ' && call gradlew.bat assembleDebug 2>&1';
 } else {
     // Linux/Replit build
     $javaPath = shell_exec('which java');
@@ -76,7 +78,7 @@ if ($returnVar === 0) {
             echo json_encode(['success' => false, 'message' => 'Failed to copy APK to panel directory', 'log' => implode("\n", $output)]);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'APK file not found after build', 'log' => implode("\n", $output)]);
+        echo json_encode(['success' => false, 'message' => 'APK file not found after build at: ' . $fullApkSource, 'log' => implode("\n", $output)]);
     }
 } else {
     echo json_encode(['success' => false, 'message' => 'Build failed with exit code ' . $returnVar, 'log' => implode("\n", $output)]);
