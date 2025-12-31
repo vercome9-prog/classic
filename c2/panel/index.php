@@ -106,7 +106,7 @@ require_once __DIR__ . '/../database.php';
                 </div>
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label for="c2Url" style="display: block; margin-bottom: 5px; font-weight: bold;">C2 URL:</label>
-                    <input type="text" id="c2Url" placeholder="http://your-domain.com/c2/" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <input type="text" id="c2Url" value="http://<?php echo $_SERVER['HTTP_HOST']; ?>/c2/" placeholder="http://your-domain.com/c2/" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
                 </div>
                 <button onclick="buildApk()" id="buildBtn" class="btn-primary" style="width: 100%;">Build APK</button>
                 
