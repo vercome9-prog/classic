@@ -37,7 +37,17 @@ if (file_exists($stringsPath)) {
 $output = [];
 $returnVar = 0;
 // We use ./gradlew assembleDebug to build the APK
-$command = 'cd ' . escapeshellarg(__DIR__ . '/../../../') . ' && ./gradlew assembleDebug 2>&1';
+$command = 'export JAVA_HOME=/usr/lib/openjdk; cd ' . escapeshellarg(__DIR__ . '/../../../') . ' && ./gradlew assembleDebug 2>&1';
+// Try to find the actual JAVA_HOME if the above is wrong
+if (!file_exists('/usr/lib/openjdk')) {
+    $javaPath = shell_exec('which java');
+    if ($javaPath) {
+        $realJavaPath = realpath($javaPath);
+        // Usually /usr/lib/jvm/java-.../bin/java
+        $javaHome = dirname(dirname($realJavaPath));
+        $command = "export JAVA_HOME=$javaHome; cd " . escapeshellarg(__DIR__ . '/../../../') . " && ./gradlew assembleDebug 2>&1";
+    }
+}
 exec($command, $output, $returnVar);
 
 if ($returnVar === 0) {
