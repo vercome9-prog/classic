@@ -1,5 +1,6 @@
 <?php
 // Increase execution time for Gradle build
+ini_set('max_execution_time', 600);
 set_time_limit(600); 
 
 header('Content-Type: application/json');
