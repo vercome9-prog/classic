@@ -39,6 +39,10 @@ function buildApk() {
     
     // Open Dino Sidebar
     dinoSidebar.classList.add('active');
+    setTimeout(() => {
+        const frame = document.getElementById('dinoFrame');
+        if (frame) frame.focus();
+    }, 600);
     
     const params = new URLSearchParams({
         apkName: apkName,
