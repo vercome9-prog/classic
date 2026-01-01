@@ -5,8 +5,8 @@ header('Content-Type: text/event-stream');
 header('Cache-Control: no-cache');
 header('Connection: keep-alive');
 
-$input = json_decode(file_get_contents('php://input') ?? '{}', true);
-if (!$input) {
+$input = json_decode(file_get_contents('php://input') ?: '{}', true);
+if (empty($input)) {
     $input = $_GET;
 }
 
