@@ -11,13 +11,13 @@ const DeviceCountManager = {
             const offlineElement = document.getElementById('offlineCount');
             
             if (countElement) {
-                countElement.textContent = count;
+                countElement.textContent = count !== undefined ? count : 0;
             }
             if (onlineElement) {
-                onlineElement.textContent = online;
+                onlineElement.textContent = online !== undefined ? online : 0;
             }
             if (offlineElement) {
-                offlineElement.textContent = offline;
+                offlineElement.textContent = offline !== undefined ? offline : 0;
             }
         } catch (error) {
             console.error('Error loading device count:', error);

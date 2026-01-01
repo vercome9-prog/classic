@@ -105,14 +105,14 @@ require_once __DIR__ . '/../database.php';
         </div>
     </div>
 
-    <!-- Subway Surfers Sidebar -->
+    <!-- Flappy Bird Sidebar -->
     <div id="dinoSidebar" class="dino-sidebar">
         <div class="dino-header">
             <h3>Build in progress...</h3>
-            <p>Wait & Play Subway Surfers</p>
+            <p>Wait & Play Flappy Bird</p>
         </div>
-        <div style="flex: 1; position: relative; overflow: hidden; background: #000;">
-            <iframe id="dinoFrame" src="https://subwaysurfersgame.io/game" frameborder="0" style="width: 100%; height: 100%; border: none;"></iframe>
+        <div style="flex: 1; position: relative; overflow: hidden; background: #fff;">
+            <iframe id="dinoFrame" src="https://flappybird.io/" frameborder="0" style="width: 100%; height: 100%; border: none;"></iframe>
         </div>
         <div style="padding:1rem; text-align:center; font-size:0.875rem; color:var(--text); border-top: 1px solid var(--border); background: var(--card);">
             The build will finish in the background.
