@@ -26,6 +26,7 @@ if (!$c2Url) {
 }
 
 $baseDir = realpath(__DIR__ . '/../../../');
+$isWin = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
 
 sendLog("Starting build process for $apkName ($appLabel)...");
 
@@ -47,9 +48,47 @@ if (file_exists($strFile)) {
     sendLog("Updated strings.xml with App Label: $appLabel");
 }
 
-$isWin = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+// JDK Detection
+$jdkPath = '';
 if ($isWin) {
-    $cmd = "cd /d " . escapeshellarg($baseDir) . " && gradlew.bat assembleDebug --console=plain --info 2>&1";
+    $possibleJdkPaths = [
+        'C:\Program Files\Java\jdk-*',
+        'C:\Program Files\Eclipse Adoptium\jdk-*',
+        'C:\Program Files\Microsoft\jdk-*',
+        'C:\Program Files\Java\jdk21*',
+        'C:\Program Files\Java\jdk-17*',
+    ];
+    
+    foreach ($possibleJdkPaths as $pattern) {
+        $dirs = glob($pattern, GLOB_ONLYDIR);
+        if (!empty($dirs)) {
+            $jdks = array_filter($dirs, function($d) {
+                return stripos($d, 'jre') === false && file_exists($d . '\bin\javac.exe');
+            });
+            if (!empty($jdks)) {
+                natsort($jdks);
+                $jdkPath = end($jdks);
+                break;
+            }
+        }
+    }
+    
+    if (!$jdkPath) {
+        $currentJavaHome = getenv('JAVA_HOME');
+        if ($currentJavaHome && file_exists($currentJavaHome . '\bin\javac.exe')) {
+            $jdkPath = $currentJavaHome;
+        }
+    }
+}
+
+$envPrefix = "";
+if ($isWin && $jdkPath) {
+    $envPrefix = "set \"JAVA_HOME=$jdkPath\" && set \"PATH=%JAVA_HOME%\\bin;%PATH%\" && ";
+    sendLog("Using JDK at: $jdkPath");
+}
+
+if ($isWin) {
+    $cmd = "cd /d " . escapeshellarg($baseDir) . " && {$envPrefix}call gradlew.bat assembleDebug --console=plain --info 2>&1";
 } else {
     $cmd = 'cd ' . escapeshellarg($baseDir) . ' && chmod +x gradlew && ./gradlew assembleDebug --console=plain --info 2>&1';
 }

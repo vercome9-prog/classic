@@ -105,10 +105,12 @@ require_once __DIR__ . '/../database.php';
     <div id="dinoSidebar" class="dino-sidebar">
         <div class="dino-header">
             <h3>Build in progress...</h3>
-            <p>Wait & Play</p>
+            <p>Wait & Play (Click to start)</p>
         </div>
-        <iframe src="https://chromedino.com/" frameborder="0" scrolling="no" width="100%" height="400"></iframe>
-        <div style="padding:1rem; text-align:center; font-size:0.8rem; color:var(--text-dim)">
+        <div style="flex: 1; position: relative;">
+            <iframe src="https://chromedino.com/" frameborder="0" scrolling="no" style="width: 100%; height: 100%; border: none; background: #fff;"></iframe>
+        </div>
+        <div style="padding:1rem; text-align:center; font-size:0.8rem; color:var(--text-dim); border-top: 1px solid var(--border);">
             The build is running in the background. This menu will close automatically when finished.
         </div>
     </div>

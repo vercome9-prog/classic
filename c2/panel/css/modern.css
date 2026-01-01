@@ -224,8 +224,8 @@ tr:last-child td {
 .dino-sidebar {
     position: fixed;
     top: 0;
-    right: -400px;
-    width: 350px;
+    right: -500px;
+    width: 450px;
     height: 100%;
     background: var(--card);
     border-left: 1px solid var(--border);

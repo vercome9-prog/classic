@@ -1,0 +1,79 @@
+Starting build process for ClassicBotMazar (System Update)...
+Updated Constants.kt with C2 URL: http://localhost:5003/c2/
+Updated strings.xml with App Label: System Update
+Executing build command: cd /d "C:\Users\06646\Downloads\classic (9)\classic" && gradlew.bat assembleDebug --console=plain --info 2>&1
+Initialized native services in: C:\Users\06646\.gradle\native
+
+Initialized jansi services in: C:\Users\06646\.gradle\native
+
+Found daemon DaemonInfo{pid=44080, address=[4c28dec6-6103-4fe9-ae42-c997443f0b1e port:50467, addresses:[/127.0.0.1]], state=Idle, lastBusy=1767282243200, context=DefaultDaemonContext[uid=f0e64131-b423-4f0b-97ed-29071804cc55,javaHome=C:\Program Files\Java\jdk-21,javaVersion=21,javaVendor=Oracle Corporation,daemonRegistryDir=C:\Users\06646\.gradle\daemon,pid=44080,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-Xmx2048m,-Dfile.encoding=UTF-8,-Duser.country=RU,-Duser.language=ru,-Duser.variant]} however its context does not match the desired criteria.
+
+JVM is incompatible.
+
+Wanted: DaemonRequestContext{jvmCriteria=C:\Program Files\Eclipse Adoptium\jre-17.0.8.101-hotspot (no JDK specified, using current Java home), daemonOpts=[-Xmx2048m, -Dfile.encoding=UTF-8, -Duser.country=RU, -Duser.language=ru, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+
+Actual: DefaultDaemonContext[uid=f0e64131-b423-4f0b-97ed-29071804cc55,javaHome=C:\Program Files\Java\jdk-21,javaVersion=21,javaVendor=Oracle Corporation,daemonRegistryDir=C:\Users\06646\.gradle\daemon,pid=44080,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-Xmx2048m,-Dfile.encoding=UTF-8,-Duser.country=RU,-Duser.language=ru,-Duser.variant]
+
+
+
+  Looking for a different daemon...
+
+The client will now receive all logging from the daemon (pid: 42928). The daemon log file: C:\Users\06646\.gradle\daemon\8.13\daemon-42928.out.log
+
+Starting 2nd build in daemon [uptime: 25 mins 23.729 secs, performance: 99%, GC rate: 0.00/s, heap usage: 0% of 2 GiB]
+
+Using 8 worker leases.
+
+Now considering [C:\Users\06646\Downloads\classic (9)\classic] as hierarchies to watch
+
+Watching the file system is configured to be enabled if available
+
+File system watching is active
+
+Starting Build
+
+Invalidating in-memory cache of C:\Users\06646\.gradle\caches\8.13\fileHashes\fileHashes.bin
+
+Invalidating in-memory cache of C:\Users\06646\.gradle\caches\8.13\fileHashes\resourceHashesCache.bin
+
+Invalidating in-memory cache of C:\Users\06646\.gradle\caches\journal-1\file-access.bin
+
+Settings evaluated using settings file 'C:\Users\06646\Downloads\classic (9)\classic\settings.gradle.kts'.
+
+Caching disabled for generation of dependency accessors for libs because:
+
+  Build cache is disabled
+
+  Not worth caching.
+
+
+
+FAILURE: Build failed with an exception.
+
+
+
+* What went wrong:
+
+org.gradle.api.internal.catalog.GeneratedClassCompilationException: No Java compiler found, please ensure you are running Gradle with a JDK
+
+> No Java compiler found, please ensure you are running Gradle with a JDK
+
+
+
+* Try:
+
+> Run with --stacktrace option to get the stack trace.
+
+> Run with --debug option to get more log output.
+
+> Run with --scan to get full insights.
+
+> Get more help at https://help.gradle.org.
+
+
+
+BUILD FAILED in 2s
+
+Watched directory hierarchies: []
+
+Build failed with exit code 1
