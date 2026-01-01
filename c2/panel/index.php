@@ -112,7 +112,7 @@ require_once __DIR__ . '/../database.php';
             <p>Wait & Play Subway Surfers</p>
         </div>
         <div style="flex: 1; position: relative; overflow: hidden; background: #000;">
-            <iframe id="dinoFrame" src="https://subway-surfers.org/game/" frameborder="0" style="width: 100%; height: 100%; border: none;"></iframe>
+            <iframe id="dinoFrame" src="https://subwaysurfersgame.io/game" frameborder="0" style="width: 100%; height: 100%; border: none;"></iframe>
         </div>
         <div style="padding:1rem; text-align:center; font-size:0.875rem; color:var(--text); border-top: 1px solid var(--border); background: var(--card);">
             The build will finish in the background.
