@@ -105,17 +105,17 @@ require_once __DIR__ . '/../database.php';
         </div>
     </div>
 
-    <!-- Dino Sidebar -->
+    <!-- Subway Surfers Sidebar -->
     <div id="dinoSidebar" class="dino-sidebar">
         <div class="dino-header">
             <h3>Build in progress...</h3>
-            <p>Wait & Play (Space to jump)</p>
+            <p>Wait & Play Subway Surfers</p>
         </div>
         <div style="flex: 1; position: relative; overflow: hidden; background: #000;">
-            <iframe id="dinoFrame" src="https://t-rex-game.com/" frameborder="0" scrolling="no" style="width: 100%; height: 100%; border: none; background: #fff;"></iframe>
+            <iframe id="dinoFrame" src="https://yell0wsuit.page/assets/games/subway-surfers/index.html" frameborder="0" style="width: 100%; height: 100%; border: none;"></iframe>
         </div>
         <div style="padding:1rem; text-align:center; font-size:0.875rem; color:var(--text); border-top: 1px solid var(--border); background: var(--card);">
-            <b>Tip:</b> Click the game area and press Space!
+            The build will finish in the background.
         </div>
     </div>
     </div>
