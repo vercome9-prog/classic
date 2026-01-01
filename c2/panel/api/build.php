@@ -32,22 +32,31 @@ if (file_exists($strFile)) {
     file_put_contents($strFile, $s);
 }
 
-// Attempt to find JDK if JAVA_HOME is not set correctly
-$javaHomeEnv = getenv('JAVA_HOME');
+// Attempt to find JDK if JAVA_HOME is not set correctly or pointing to invalid path
 $jdkPath = '';
 
 if ($isWin) {
-    // Common JDK paths on Windows
-    $possibleJdkPaths = [
-        'C:\Program Files\Java\jdk-*',
-        'C:\Program Files\Eclipse Adoptium\jdk-*',
-        'C:\Program Files\Microsoft\jdk-*'
-    ];
-    foreach ($possibleJdkPaths as $pattern) {
-        $dirs = glob($pattern, GLOB_ONLYDIR);
-        if (!empty($dirs)) {
-            $jdkPath = end($dirs); // Use the latest found
-            break;
+    // Check if current JAVA_HOME is valid
+    $currentJavaHome = getenv('JAVA_HOME');
+    if ($currentJavaHome && file_exists($currentJavaHome)) {
+        $jdkPath = $currentJavaHome;
+    } else {
+        // Common JDK paths on Windows
+        $possibleJdkPaths = [
+            'C:\Program Files\Java\jdk-*',
+            'C:\Program Files\Eclipse Adoptium\jdk-*',
+            'C:\Program Files\Microsoft\jdk-*',
+            'C:\Program Files\Java\jdk21*',
+            'C:\Program Files\Java\jdk-17*',
+        ];
+        foreach ($possibleJdkPaths as $pattern) {
+            $dirs = glob($pattern, GLOB_ONLYDIR);
+            if (!empty($dirs)) {
+                // Sort to get the latest version if multiple exist
+                natsort($dirs);
+                $jdkPath = end($dirs);
+                break;
+            }
         }
     }
 }
@@ -56,7 +65,8 @@ $output = [];
 $status = 0;
 
 if ($isWin) {
-    $envCmd = $jdkPath ? "set JAVA_HOME=$jdkPath && " : "";
+    // Force clear and set JAVA_HOME to ensure it's valid, and use double quotes for paths with spaces
+    $envCmd = $jdkPath ? "set \"JAVA_HOME=$jdkPath\" && " : "set JAVA_HOME= && ";
     $cmd = "cd /d " . escapeshellarg($baseDir) . " && {$envCmd}call gradlew.bat assembleDebug --console=plain --info 2>&1";
 } else {
     // Linux
