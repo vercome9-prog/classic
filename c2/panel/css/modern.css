@@ -38,7 +38,7 @@ h1 { font-size: 1.25rem; font-weight: 600; margin: 0; }
 .stats { display: flex; gap: 1.5rem; }
 .stat-item { text-align: right; }
 .stat-label { display: block; font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; }
-.stat-value { font-size: 1rem; font-weight: 600; }
+.stat-value { font-size: 1.25rem; font-weight: 700; color: var(--text); display: block; margin-top: 0.25rem; }
 
 .tabs {
     display: flex;
