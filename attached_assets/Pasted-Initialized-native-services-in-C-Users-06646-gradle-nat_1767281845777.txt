@@ -1,0 +1,34 @@
+Initialized native services in: C:\Users\06646\.gradle\native
+Initialized jansi services in: C:\Users\06646\.gradle\native
+Removing 0 daemon stop events from registry
+Starting a Gradle Daemon (subsequent builds will be faster)
+Starting process 'Gradle build daemon'. Working directory: C:\Users\06646\.gradle\daemon\8.13 Command: C:\Program Files\Eclipse Adoptium\jre-17.0.8.101-hotspot\bin\java.exe --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-opens=java.base/java.nio.charset=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.xml/javax.xml.namespace=ALL-UNNAMED -Xmx2048m -Dfile.encoding=UTF-8 -Duser.country=RU -Duser.language=ru -Duser.variant -cp C:\Users\06646\.gradle\wrapper\dists\gradle-8.13-bin\5xuhj0ry160q40clulazy9h7d\gradle-8.13\lib\gradle-daemon-main-8.13.jar -javaagent:C:\Users\06646\.gradle\wrapper\dists\gradle-8.13-bin\5xuhj0ry160q40clulazy9h7d\gradle-8.13\lib\agents\gradle-instrumentation-agent-8.13.jar org.gradle.launcher.daemon.bootstrap.GradleDaemon 8.13
+Successfully started process 'Gradle build daemon'
+An attempt to start the daemon took 2.26 secs.
+The client will now receive all logging from the daemon (pid: 42928). The daemon log file: C:\Users\06646\.gradle\daemon\8.13\daemon-42928.out.log
+Starting build in new daemon [memory: 2 GiB]
+Using 8 worker leases.
+Received JVM installation metadata from 'C:\Program Files\Eclipse Adoptium\jre-17.0.8.101-hotspot': {JAVA_HOME=C:\Program Files\Eclipse Adoptium\jre-17.0.8.101-hotspot, JAVA_VERSION=17.0.8.1, JAVA_VENDOR=Eclipse Adoptium, RUNTIME_NAME=OpenJDK Runtime Environment, RUNTIME_VERSION=17.0.8.1+1, VM_NAME=OpenJDK 64-Bit Server VM, VM_VERSION=17.0.8.1+1, VM_VENDOR=Eclipse Adoptium, OS_ARCH=amd64}
+Watching the file system is configured to be enabled if available
+Now considering [C:\Users\06646\Downloads\classic (4)\classic] as hierarchies to watch
+File system watching is active
+Starting Build
+Settings evaluated using settings file 'C:\Users\06646\Downloads\classic (4)\classic\settings.gradle.kts'.
+Caching disabled for generation of dependency accessors for libs because:
+  Build cache is disabled
+  Not worth caching.
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+org.gradle.api.internal.catalog.GeneratedClassCompilationException: No Java compiler found, please ensure you are running Gradle with a JDK
+> No Java compiler found, please ensure you are running Gradle with a JDK
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 8s
+Watched directory hierarchies: []

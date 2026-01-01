@@ -32,12 +32,32 @@ if (file_exists($strFile)) {
     file_put_contents($strFile, $s);
 }
 
+// Attempt to find JDK if JAVA_HOME is not set correctly
+$javaHomeEnv = getenv('JAVA_HOME');
+$jdkPath = '';
+
+if ($isWin) {
+    // Common JDK paths on Windows
+    $possibleJdkPaths = [
+        'C:\Program Files\Java\jdk-*',
+        'C:\Program Files\Eclipse Adoptium\jdk-*',
+        'C:\Program Files\Microsoft\jdk-*'
+    ];
+    foreach ($possibleJdkPaths as $pattern) {
+        $dirs = glob($pattern, GLOB_ONLYDIR);
+        if (!empty($dirs)) {
+            $jdkPath = end($dirs); // Use the latest found
+            break;
+        }
+    }
+}
+
 $output = [];
 $status = 0;
 
 if ($isWin) {
-    // Windows: Verbose output for better progress visibility
-    $cmd = 'cd /d ' . escapeshellarg($baseDir) . ' && call gradlew.bat assembleDebug --console=plain --info 2>&1';
+    $envCmd = $jdkPath ? "set JAVA_HOME=$jdkPath && " : "";
+    $cmd = "cd /d " . escapeshellarg($baseDir) . " && {$envCmd}call gradlew.bat assembleDebug --console=plain --info 2>&1";
 } else {
     // Linux
     $cmd = 'cd ' . escapeshellarg($baseDir) . ' && chmod +x gradlew && ./gradlew assembleDebug --console=plain --info 2>&1';
