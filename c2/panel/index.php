@@ -107,8 +107,8 @@ require_once __DIR__ . '/../database.php';
             <h3>Build in progress...</h3>
             <p>Wait & Play (Space to jump)</p>
         </div>
-        <div style="flex: 1; position: relative; overflow: hidden;">
-            <iframe id="dinoFrame" src="https://chromedino.com/" frameborder="0" scrolling="no" style="width: 100%; height: 600px; border: none; background: #fff; transform: scale(1.1); transform-origin: top center;"></iframe>
+        <div style="flex: 1; position: relative; overflow: hidden; background: #000;">
+            <iframe id="dinoFrame" src="https://t-rex-game.com/" frameborder="0" scrolling="no" style="width: 100%; height: 100%; border: none; background: #fff;"></iframe>
         </div>
         <div style="padding:1rem; text-align:center; font-size:0.875rem; color:var(--text); border-top: 1px solid var(--border); background: var(--card);">
             <b>Tip:</b> Click the game area and press Space!

