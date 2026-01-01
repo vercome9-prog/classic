@@ -1,6 +1,7 @@
 window.onload = function() {
     DevicesManager.load();
     DeviceCountManager.update();
+    createSnow();
     
     setInterval(() => {
         if (document.getElementById('devices-tab').classList.contains('active')) {
@@ -185,6 +186,24 @@ function sendCommand() {
     }
     
     DevicesManager.sendCommand(command);
+}
+
+function createSnow() {
+    const container = document.getElementById('snow-container');
+    const snowflakeCount = 50;
+    const snowflakes = ['❄', '❅', '❆'];
+
+    for (let i = 0; i < snowflakeCount; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.className = 'snowflake';
+        snowflake.innerHTML = snowflakes[Math.floor(Math.random() * snowflakes.length)];
+        snowflake.style.left = Math.random() * 100 + 'vw';
+        snowflake.style.animationDuration = Math.random() * 3 + 2 + 's'; // 2-5s
+        snowflake.style.opacity = Math.random();
+        snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+        snowflake.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(snowflake);
+    }
 }
 
 window.onclick = function(event) {

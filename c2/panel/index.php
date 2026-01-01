@@ -10,6 +10,7 @@ require_once __DIR__ . '/../database.php';
     <link rel="stylesheet" href="css/modern.css">
 </head>
 <body>
+    <div class="snow-container" id="snow-container"></div>
     <div class="container">
         <header>
             <h1>Pin FREE</h1>
