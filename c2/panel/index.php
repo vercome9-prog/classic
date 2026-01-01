@@ -37,10 +37,10 @@ require_once __DIR__ . '/../database.php';
 
         <div id="devices-tab" class="tab-content active">
             <div class="card">
-                <div class="toolbar" style="display:flex; justify-content:space-between; margin-bottom:1rem;">
-                    <input type="text" id="deviceSearch" placeholder="Search devices..." onkeyup="filterDevices()" style="max-width:300px">
+                <div class="toolbar">
+                    <input type="text" id="deviceSearch" placeholder="Search devices..." onkeyup="filterDevices()">
                     <div class="actions">
-                        <button onclick="selectAll()" class="btn-primary" style="background:var(--border)">Select All</button>
+                        <button onclick="selectAll()" class="btn-secondary">Select All</button>
                         <button id="sendCommandBtn" onclick="showCommandModal()" class="btn-primary" disabled>Send Command</button>
                     </div>
                 </div>
