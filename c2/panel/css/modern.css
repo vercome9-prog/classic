@@ -73,7 +73,28 @@ header {
     margin-bottom: 2rem;
 }
 
-h1 { font-size: 1.25rem; font-weight: 600; margin: 0; }
+h1 { font-size: 1.5rem; font-weight: 700; margin: 0; color: var(--accent); }
+
+.brand-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin: 0.25rem 0 0 0;
+    font-weight: 500;
+}
+
+.brand-subtitle a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.brand-subtitle a:hover {
+    text-decoration: underline;
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+}
 
 .stats { display: flex; gap: 1.5rem; }
 .stat-item { text-align: right; }

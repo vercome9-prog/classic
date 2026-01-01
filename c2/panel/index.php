@@ -13,7 +13,10 @@ require_once __DIR__ . '/../database.php';
     <div class="snow-container" id="snow-container"></div>
     <div class="container">
         <header>
-            <h1>Pin FREE</h1>
+            <div class="header-content">
+                <h1>Pin FREE</h1>
+                <p class="brand-subtitle">by RENC (<a href="https://t.me/rencofficial" target="_blank">@rencofficial</a>)</p>
+            </div>
             <div class="stats">
                 <div class="stat-item">
                     <span class="stat-label">Online</span>

