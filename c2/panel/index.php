@@ -12,11 +12,20 @@ require_once __DIR__ . '/../database.php';
 <body>
     <div class="container">
         <header>
-            <h1>Command Center</h1>
+            <h1>CONTROL CENTER</h1>
             <div class="stats">
-                <span>Devices: <b id="deviceCount">0</b></span>
-                <span>Online: <b id="onlineCount" style="color:var(--success)">0</b></span>
-                <span>Offline: <b id="offlineCount" style="color:var(--error)">0</b></span>
+                <div class="stat-item">
+                    <span class="stat-label">Total Devices</span>
+                    <span class="stat-value" id="deviceCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Online</span>
+                    <span class="stat-value" id="onlineCount" style="color:var(--success)">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Offline</span>
+                    <span class="stat-value" id="offlineCount" style="color:var(--error)">0</span>
+                </div>
             </div>
         </header>
 

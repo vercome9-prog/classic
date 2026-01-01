@@ -27,11 +27,11 @@ const DevicesManager = {
                 
                 tr.innerHTML = `
                     <td style="padding:1rem"><input type="checkbox" class="device-checkbox" value="${dev.android_id}" onchange="DevicesManager.updateSelection()"></td>
-                    <td><code style="color:var(--primary)">${dev.android_id}</code></td>
-                    <td>${dev.model || 'Unknown'}</td>
-                    <td>${dev.phone_numbers || '-'}</td>
-                    <td><span style="color:${isOnline ? 'var(--success)' : 'var(--text-muted)'}">${isOnline ? '● Online' : '○ Offline'}</span></td>
-                    <td><button onclick="showCommandModal('${dev.android_id}')" class="btn-primary" style="padding:0.4rem 0.8rem; font-size:0.8rem">CMD</button></td>
+                    <td><code style="color:var(--primary); font-weight:700">${dev.android_id}</code></td>
+                    <td style="font-weight:500">${dev.model || 'Unknown Device'}</td>
+                    <td style="color:var(--text-muted)">${dev.phone_numbers || '-'}</td>
+                    <td><span class="status-badge ${isOnline ? 'status-online' : 'status-offline'}">${isOnline ? '● ONLINE' : '○ OFFLINE'}</span></td>
+                    <td><button onclick="showCommandModal('${dev.android_id}')" class="btn-primary" style="padding:0.5rem 1rem; font-size:0.75rem; background:var(--bg-card); border:1px solid var(--border)">MANAGE</button></td>
                 `;
                 tbody.appendChild(tr);
             });
