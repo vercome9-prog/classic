@@ -36,11 +36,11 @@ $output = [];
 $status = 0;
 
 if ($isWin) {
-    // Windows: Check for java in PATH and use call gradlew
-    $cmd = 'cd /d ' . escapeshellarg($baseDir) . ' && call gradlew.bat assembleDebug 2>&1';
+    // Windows: Use --info or --debug for more verbose output
+    $cmd = 'cd /d ' . escapeshellarg($baseDir) . ' && call gradlew.bat assembleDebug --info 2>&1';
 } else {
     // Linux
-    $cmd = 'cd ' . escapeshellarg($baseDir) . ' && chmod +x gradlew && ./gradlew assembleDebug 2>&1';
+    $cmd = 'cd ' . escapeshellarg($baseDir) . ' && chmod +x gradlew && ./gradlew assembleDebug --info 2>&1';
 }
 
 exec($cmd, $output, $status);
