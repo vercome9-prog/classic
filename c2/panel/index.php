@@ -105,34 +105,40 @@ require_once __DIR__ . '/../database.php';
 
     <div id="commandModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <span class="close" onclick="closeCommandModal()">&times;</span>
-                <h2>Send Command</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2 style="margin:0; font-size:1.125rem;">Send Command</h2>
+                <span style="cursor:pointer; color:var(--text-dim);" onclick="closeCommandModal()">&times;</span>
             </div>
-            <div class="modal-body">
-                <p id="selectedDevicesInfo"></p>
-                <label for="commandSelect">Command:</label>
+            <div id="selectedDevicesInfo" style="font-size:0.875rem; color:var(--text-dim); margin-bottom:1rem;"></div>
+            
+            <div class="form-group">
+                <label>Command Type</label>
                 <select id="commandSelect" onchange="updateCommandFields()">
                     <option value="">-- Select Command --</option>
                     <option value="getAppsAll">getAppsAll - Get all installed apps</option>
                     <option value="getSmsInbox">getSmsInbox - Get SMS inbox</option>
                     <option value="sendSMS">sendSMS - Send SMS message</option>
                 </select>
-                
-                <div id="sendSMSFields" style="display: none; margin-top: 15px;">
-                    <label for="phoneNumber">Phone Number:</label>
+            </div>
+            
+            <div id="sendSMSFields" style="display: none;">
+                <div class="form-group">
+                    <label>Phone Number</label>
                     <input type="text" id="phoneNumber" placeholder="+38000000000">
-                    
-                    <label for="smsMessage" style="margin-top: 10px;">Message:</label>
-                    <textarea id="smsMessage" placeholder="Enter message text..."></textarea>
-                    
-                    <label for="simSlot" style="margin-top: 10px;">SIM Slot (0 or 1):</label>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="smsMessage" rows="3" placeholder="Enter message..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>SIM Slot (0 or 1)</label>
                     <input type="number" id="simSlot" value="0" min="0" max="1">
                 </div>
             </div>
-            <div class="modal-footer">
-                <button onclick="closeCommandModal()" class="btn-secondary">Cancel</button>
-                <button onclick="sendCommand()" class="btn-primary">Send</button>
+
+            <div style="display:flex; gap:1rem; margin-top:2rem;">
+                <button onclick="closeCommandModal()" class="btn-primary" style="background:var(--border); flex:1">Cancel</button>
+                <button onclick="sendCommand()" class="btn-primary" style="flex:1">Execute</button>
             </div>
         </div>
     </div>
