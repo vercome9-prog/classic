@@ -190,18 +190,23 @@ function sendCommand() {
 
 function createSnow() {
     const container = document.getElementById('snow-container');
-    const snowflakeCount = 50;
+    const snowflakeCount = 30; // Reduced count
     const snowflakes = ['❄', '❅', '❆'];
 
     for (let i = 0; i < snowflakeCount; i++) {
         const snowflake = document.createElement('div');
         snowflake.className = 'snowflake';
         snowflake.innerHTML = snowflakes[Math.floor(Math.random() * snowflakes.length)];
-        snowflake.style.left = Math.random() * 100 + 'vw';
-        snowflake.style.animationDuration = Math.random() * 3 + 2 + 's'; // 2-5s
-        snowflake.style.opacity = Math.random();
-        snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
-        snowflake.style.animationDelay = Math.random() * 5 + 's';
+        
+        const startX = Math.random() * 100;
+        const drift = (Math.random() - 0.5) * 200; // Random horizontal drift
+        
+        snowflake.style.left = startX + 'vw';
+        snowflake.style.setProperty('--drift', drift + 'px');
+        snowflake.style.animationDuration = Math.random() * 10 + 10 + 's'; // Much slower: 10-20s
+        snowflake.style.opacity = '0';
+        snowflake.style.fontSize = Math.random() * 5 + 8 + 'px'; // Smaller: 8-13px
+        snowflake.style.animationDelay = Math.random() * 15 + 's';
         container.appendChild(snowflake);
     }
 }
