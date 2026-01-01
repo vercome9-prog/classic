@@ -15,10 +15,6 @@ require_once __DIR__ . '/../database.php';
             <h1>Pin FREE</h1>
             <div class="stats">
                 <div class="stat-item">
-                    <span class="stat-label">Total Devices</span>
-                    <span class="stat-value" id="deviceCount">0</span>
-                </div>
-                <div class="stat-item">
                     <span class="stat-label">Online</span>
                     <span class="stat-value" id="onlineCount" style="color:var(--success)">0</span>
                 </div>
