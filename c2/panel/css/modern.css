@@ -80,6 +80,8 @@ h1 { font-size: 1.25rem; font-weight: 600; margin: 0; }
     border-radius: 0.5rem;
     padding: 1.5rem;
     margin-bottom: 1rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .form-group { margin-bottom: 1.25rem; }
@@ -101,6 +103,7 @@ input, select, textarea {
     font-size: 0.875rem;
     outline: none;
     transition: border-color 0.2s;
+    box-sizing: border-box;
 }
 
 input:focus { border-color: var(--accent); }
@@ -115,11 +118,17 @@ input:focus { border-color: var(--accent); }
     font-weight: 600;
     cursor: pointer;
     transition: background 0.2s;
+    box-sizing: border-box;
 }
 
 .btn-primary:hover { background: var(--accent-hover); }
 
-table { width: 100%; border-collapse: collapse; }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
 th {
     text-align: left;
     font-size: 0.75rem;
@@ -128,7 +137,41 @@ th {
     padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--border);
 }
-td { padding: 1rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); }
+td { 
+    padding: 1rem; 
+    font-size: 0.875rem; 
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dino-sidebar {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 350px;
+    height: 100%;
+    background: var(--card);
+    border-left: 1px solid var(--border);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+    transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.dino-sidebar.active {
+    right: 0;
+}
+
+.dino-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.dino-header h3 { margin: 0; font-size: 1rem; color: var(--accent); }
+.dino-header p { margin: 0.25rem 0 0 0; font-size: 0.8rem; color: var(--text-dim); }
 
 .status-online { color: var(--success); }
 .status-offline { color: var(--text-dim); }

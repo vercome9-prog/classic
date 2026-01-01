@@ -90,15 +90,24 @@ require_once __DIR__ . '/../database.php';
                 
                 <div id="buildStatus" style="margin-top: 1.5rem; display: none;">
                     <p id="statusMessage"></p>
-                    <div id="downloadLink" style="display: none; margin-bottom: 1rem;">
-                        <a id="apkDownloadBtn" href="#" class="btn-primary" style="display:block; text-align:center; background:var(--success); text-decoration:none">Download Build</a>
-                    </div>
-                    <details>
-                        <summary style="color:var(--text-muted); cursor:pointer">Console Output</summary>
-                        <pre id="buildLog"></pre>
+                    <details open>
+                        <summary style="color:var(--text-dim); cursor:pointer; margin-bottom:0.5rem">Live Build Output</summary>
+                        <pre id="buildLog" style="max-height: 400px; overflow-y: auto;"></pre>
                     </details>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Dino Sidebar -->
+    <div id="dinoSidebar" class="dino-sidebar">
+        <div class="dino-header">
+            <h3>Build in progress...</h3>
+            <p>Wait & Play</p>
+        </div>
+        <iframe src="https://chromedino.com/" frameborder="0" scrolling="no" width="100%" height="400"></iframe>
+        <div style="padding:1rem; text-align:center; font-size:0.8rem; color:var(--text-dim)">
+            The build is running in the background. This menu will close automatically when finished.
         </div>
     </div>
     </div>
