@@ -144,11 +144,7 @@ require_once __DIR__ . '/../database.php';
     </div>
 
     <script src="js/api.js"></script>
-    <script src="js/pagination.js"></script>
-    <script src="js/deviceCount.js"></script>
-    <script src="js/devices.js"></script>
-    <script src="js/logs.js"></script>
-    <script src="js/tabs.js"></script>
+    <script src="js/app-bundle.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

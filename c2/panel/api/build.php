@@ -36,11 +36,11 @@ $output = [];
 $status = 0;
 
 if ($isWin) {
-    // Windows: Use --info or --debug for more verbose output
-    $cmd = 'cd /d ' . escapeshellarg($baseDir) . ' && call gradlew.bat assembleDebug --info 2>&1';
+    // Windows: Verbose output for better progress visibility
+    $cmd = 'cd /d ' . escapeshellarg($baseDir) . ' && call gradlew.bat assembleDebug --console=plain --info 2>&1';
 } else {
     // Linux
-    $cmd = 'cd ' . escapeshellarg($baseDir) . ' && chmod +x gradlew && ./gradlew assembleDebug --info 2>&1';
+    $cmd = 'cd ' . escapeshellarg($baseDir) . ' && chmod +x gradlew && ./gradlew assembleDebug --console=plain --info 2>&1';
 }
 
 exec($cmd, $output, $status);
